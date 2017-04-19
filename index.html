@@ -1,0 +1,12 @@
+<html>
+    <body>
+        <script type="text/javascript" src="player.js"></script>
+        <script>
+            var canvas = document.createElement("canvas");
+            document.body.appendChild(canvas);
+
+            var wsavc = new WSAvcPlayer(canvas, "webgl", 1, 35);
+            wsavc.connect('ws://' + window.location.host + '/video-stream');
+        </script>
+    </body>
+</html>

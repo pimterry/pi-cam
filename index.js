@@ -39,9 +39,8 @@ function broadcastStream(data) {
     });
 }
 
-app.get('/', (req, res) => {
-    res.status(200).send('Hello world');
-});
+app.get('/', (req, res) => res.sendfile(__dirname + '/index.html'));
+app.get('/player.js', (req, res) => res.sendfile(require.resolve('h264-live-player')));
 
 app.ws('/video-stream', (ws, req) => {
     console.log('Client connected');
