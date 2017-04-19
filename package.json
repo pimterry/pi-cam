@@ -26,6 +26,8 @@
   "homepage": "https://github.com/pimterry/pi-cam#readme",
   "dependencies": {
     "express": "^4.15.2",
-    "raspivid": "^1.0.0"
+    "express-ws": "^3.0.0",
+    "raspivid": "^1.0.0",
+    "stream-split": "^1.1.0"
   }
 }
