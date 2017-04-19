@@ -5,7 +5,7 @@
             var canvas = document.createElement("canvas");
             document.body.appendChild(canvas);
 
-            var wsavc = new WSAvcPlayer(canvas, "webgl", 1, 35);
+            var wsavc = new WSAvcPlayer(canvas, "webgl");
             wsavc.connect('ws://' + window.location.host + '/video-stream');
         </script>
     </body>

@@ -46,8 +46,8 @@ app.ws('/video-stream', (ws, req) => {
 
     ws.send(JSON.stringify({
       action: 'init',
-      width: '640',
-      height: '480'
+      width: '960',
+      height: '540'
     }));
 
     ws.on('message', (msg) => console.log('Received', msg));
