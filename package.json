@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/pimterry/pi-cam#readme",
   "dependencies": {
-    "express": "^4.15.2"
+    "express": "^4.15.2",
+    "raspivid": "^1.0.0"
   }
 }
