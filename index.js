@@ -1,16 +1,20 @@
+process.on('uncaughtException', function(err) {
+  console.log('Caught exception: ' + err);
+});
+
 const express = require('express');
 const Splitter = require('stream-split');
 const raspivid = require('raspivid');
-const fs = require('fs');
+
+const NALseparator = new Buffer([0,0,0,1]);
 
 function startRecording() {
-    const NALseparator = new Buffer([0,0,0,1]);
-
     const video = raspivid({
         width: 640,
         height: 480,
         framerate: 12,
-        profile: 'baseline'
+        profile: 'baseline',
+        timeout: 0
     });
 
     video.pipe(new Splitter(NALseparator)).on('data', broadcastStream);
@@ -20,12 +24,16 @@ const app = express();
 const wss = require('express-ws')(app);
 
 function broadcastStream(data) {
-    wss.getWss().clients.forEach((socket) => {
+    const clients = wss.getWss().clients;
+
+    if (clients.size > 0) console.log('Broadcasting to', clients.size, 'client(s)');
+
+    clients.forEach((socket) => {
         if (socket.busy) return;
 
         socket.busy = true;
         socket.send(Buffer.concat([NALseparator, data]), { binary: true }, (error) => {
-            console.error(error);
+            if (error) console.error(error);
             socket.busy = false;
         });
     });
