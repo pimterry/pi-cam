@@ -7,6 +7,6 @@ WORKDIR usr/src/app
 COPY package.json ./
 RUN JOBS=MAX npm i --production
 
-COPY index.js ./
+COPY . ./
 
 CMD npm start
