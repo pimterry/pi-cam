@@ -6,4 +6,4 @@ app.get('/', (req, res) => {
     res.send(200, 'Hello world');
 });
 
-app.listen(8080, () => console.log('Server started on 8080'));
+app.listen(80, () => console.log('Server started on 80'));
