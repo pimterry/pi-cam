@@ -1,0 +1,7 @@
+local_resinos:
+  app-name: pi-cam
+  build-triggers:
+    - Dockerfile: 08d7bf2b9e2337c5f97c5164394a9d02778029245d4635bdc5bae26913defd09
+    - package.json: 2a381499b79275b20cf37020b1724d3c8397a93f4b6b3e797acdf35c6b70bc26
+  environment:
+    - INITSYSTEM=on
