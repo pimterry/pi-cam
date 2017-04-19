@@ -4,8 +4,13 @@ var fs = require('fs');
 
 const VIDEO = '/data/video.h264';
 
-var file = fs.createWriteStream(VIDEO);
-var video = raspivid();
+const file = fs.createWriteStream(VIDEO);
+const video = raspivid({
+    width: 640,
+    height: 480,
+    framerate: 12,
+    profile: 'baseline'
+});
 
 video.pipe(file);
 
