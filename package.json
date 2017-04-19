@@ -1,0 +1,30 @@
+{
+  "name": "pi-cam",
+  "version": "1.0.0",
+  "description": "A pure-JS Raspberry Pi webcam",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pimterry/pi-cam.git"
+  },
+  "keywords": [
+    "resin-io",
+    "raspberrypi",
+    "webcam",
+    "hardware",
+    "iot"
+  ],
+  "author": "Tim Perry <pimterry@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pimterry/pi-cam/issues"
+  },
+  "homepage": "https://github.com/pimterry/pi-cam#readme",
+  "dependencies": {
+    "express": "^4.15.2"
+  }
+}
