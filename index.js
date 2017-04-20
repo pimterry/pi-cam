@@ -4,20 +4,37 @@ process.on('uncaughtException', function(err) {
 
 const express = require('express');
 const Splitter = require('stream-split');
+const Transform = require('stream').Transform;
 const raspivid = require('raspivid');
 
 const NALseparator = new Buffer([0,0,0,1]);
+var firstFrames = [];
+var lastIdrFrame = null;
 
 function startRecording() {
-    const video = raspivid({
+    raspivid({
         width: 960,
         height: 540,
         framerate: 12,
         profile: 'baseline',
         timeout: 0
-    });
+    })
+    .pipe(new Splitter(NALseparator))
+    .pipe(new Transform({ transform: function (chunk, encoding, callback) {
+        // Capture the first two chunks (SPS & PPS), so we can reproduce them for later clients.
+        if (firstFrames.length < 2) {
+            console.log('Saving frame', firstFrames.length);
+            firstFrames.push(Buffer.concat([NALseparator, chunk]));
+        } else if (chunk[0] == 0x25) {
+            console.log('Saving IDR frame');
+            lastIdrFrame = Buffer.concat([NALseparator, chunk]);
+        }
 
-    video.pipe(new Splitter(NALseparator)).on('data', broadcastStream);
+        // No actual transformations here.
+        this.push(chunk);
+        callback();
+    }}))
+    .on('data', broadcastStream);
 }
 
 const app = express();
@@ -46,15 +63,20 @@ app.ws('/video-stream', (ws, req) => {
       height: '540'
     }));
 
+    // Resend the first two frames that define the stream parameters
+    firstFrames.forEach((frame) => {
+        ws.send(frame, { binary: true }, (error) => { if (error) console.error(error) });
+    });
+    // Send the last IDR frame, so our diff frames are sort-of close
+    ws.send(lastIdrFrame, { binary: true }, (error) => { if (error) console.error(error) });
+
     ws.on('message', (msg) => {
         console.log('Received message: "' + msg.toString() + '"');
-        if (msg.split(' ')[0] === 'REQUESTSTREAM') {
-            startRecording();
-        }
     });
 
     ws.on('close', () => console.log('Client left'));
 });
 
+startRecording();
 app.listen(80, () => console.log('Server started on 80'));
 
