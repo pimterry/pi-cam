@@ -6,7 +6,9 @@
             document.body.appendChild(canvas);
 
             var wsavc = new WSAvcPlayer(canvas, "webgl");
-            wsavc.connect('ws://' + window.location.host + '/video-stream');
+
+            var protocol = window.location.protocol === "https:" ? "wss:" : "ws:"
+            wsavc.connect(protocol + '//' + window.location.host + '/video-stream');
         </script>
     </body>
 </html>
