@@ -29,6 +29,7 @@
     "express-ws": "^3.0.0",
     "h264-live-player": "^1.3.1",
     "raspivid": "^1.0.0",
+    "raspivid-stream": "^0.1.0",
     "stream-split": "^1.1.0",
     "stream-throttle": "^0.1.3"
   }
