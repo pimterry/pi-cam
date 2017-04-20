@@ -4,7 +4,7 @@ process.on('uncaughtException', function(err) {
 });
 
 const express = require('express');
-const raspividStream = require('./raspivid-stream');
+const raspividStream = require('raspivid-stream');
 
 const app = express();
 const wss = require('express-ws')(app);
