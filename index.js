@@ -1,3 +1,8 @@
+process.on('uncaughtException', function(err) {
+  console.log('Caught exception: ' + err);
+  console.log(err.stack);
+});
+
 const express = require('express');
 const raspividStream = require('./raspivid-stream');
 

@@ -1,6 +1,6 @@
 const Splitter = require('stream-split');
 const stream = require('stream');
-const concat = require('concat-stream');
+const StreamConcat = require('stream-concat');
 const raspivid = require('raspivid');
 
 const NALseparator = new Buffer([0,0,0,1]);
@@ -9,10 +9,6 @@ const headerData = {
     _waitingStream: new stream.PassThrough(),
     _firstFrames: [],
     _lastIdrFrame: null,
-
-    get idrFrame() {
-        return this._lastIdrFrame;
-    },
 
     set idrFrame(frame) {
         this._lastIdrFrame = frame;
@@ -30,12 +26,10 @@ const headerData = {
         if (this._waitingStream) {
             return this._waitingStream;
         } else {
-            const stream = new stream.Readable();
-            this._firstFrames.forEach((frame) => {
-                stream.push(frame);
-            });
-            stream.push(this._lastIdrFrame);
-            return stream;
+            const headersStream = new stream.PassThrough();
+            this._firstFrames.forEach((frame) => headersStream.push(frame));
+            headersStream.push(this._lastIdrFrame);
+            return headersStream;
         }
     }
 };
@@ -60,11 +54,11 @@ function getLiveStream() {
             headerData.addParameterFrame(chunkWithSeparator);
         } else {
             // The live stream only includes the non-parameter chunks
-            this.push(Buffer.concat([NALseparator, chunk]));
+            this.push(chunkWithSeparator);
 
             // Keep track of the latest IDR chunk, so we can start clients off with a near-current image
             if (chunkType === 5) {
-                headerData.idrFrame = Buffer.concat([NALseparator, chunk]);
+                headerData.idrFrame = chunkWithSeparator;
             }
         }
 
@@ -75,9 +69,9 @@ function getLiveStream() {
 var liveStream = null;
 
 module.exports = function () {
-    if (!stream) {
+    if (!liveStream) {
         liveStream = getLiveStream();
     }
 
-    return headerData.getStream().pipe(concat(liveStream));
+    return new StreamConcat([headerData.getStream(), liveStream]);
 }
