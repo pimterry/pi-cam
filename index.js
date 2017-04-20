@@ -3,25 +3,36 @@ process.on('uncaughtException', function(err) {
 });
 
 const express = require('express');
+const fs = require('fs');
 const Splitter = require('stream-split');
+const Throttle = require('stream-throttle').Throttle;
+const Transform = require('stream').Transform;
 const raspivid = require('raspivid');
+const spawn = require('child_process').spawn;
 
 const NALseparator = new Buffer([0,0,0,1]);
 
 function startRecording() {
-    const video = raspivid({
-        width: 640,
-        height: 480,
-        framerate: 12,
-        profile: 'baseline',
-        timeout: 0
-    });
-
-    video.pipe(new Splitter(NALseparator)).on('data', broadcastStream);
+    var proc = spawn('raspivid', ['-t', '0', '-o', '-', '-w', 960, '-h', 540, '-fps', 12, '-pf', 'baseline']);
+    proc.stdout
+    .pipe(new Splitter(NALseparator))
+    .pipe(new Transform({ transform: function (chunk, encoding, callback) {
+        // Transform NAL unit
+        if (chunk[0] === 0x25) {
+            chunk[0] = 0x65;
+        } else if (chunk[0] === 0x21) {
+            chunk[0] = 0x41;
+        }
+        this.push(chunk);
+        callback();
+    }}))
+    .on('data', broadcastStream);
 }
 
 const app = express();
 const wss = require('express-ws')(app);
+
+var recording = false;
 
 function broadcastStream(data) {
     const clients = wss.getWss().clients;
@@ -50,10 +61,15 @@ app.ws('/video-stream', (ws, req) => {
       height: '540'
     }));
 
+    if (!recording) {
+        startRecording();
+        recording = true;
+    }
+
     ws.on('message', (msg) => console.log('Received', msg));
 
     ws.on('close', () => console.log('Client left'));
 });
 
-startRecording();
 app.listen(80, () => console.log('Server started on 80'));
+
