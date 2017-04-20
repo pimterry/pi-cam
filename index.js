@@ -16,16 +16,6 @@ function startRecording() {
     var proc = spawn('raspivid', ['-t', '0', '-o', '-', '-w', 960, '-h', 540, '-fps', 12, '-pf', 'baseline']);
     proc.stdout
     .pipe(new Splitter(NALseparator))
-    .pipe(new Transform({ transform: function (chunk, encoding, callback) {
-        // Transform NAL unit
-        if (chunk[0] === 0x25) {
-            chunk[0] = 0x65;
-        } else if (chunk[0] === 0x21) {
-            chunk[0] = 0x41;
-        }
-        this.push(chunk);
-        callback();
-    }}))
     .on('data', broadcastStream);
 }
 
@@ -61,12 +51,13 @@ app.ws('/video-stream', (ws, req) => {
       height: '540'
     }));
 
-    if (!recording) {
-        startRecording();
-        recording = true;
-    }
-
-    ws.on('message', (msg) => console.log('Received', msg));
+    ws.on('message', (msg) => {
+        console.log('Received message', msg);
+        if (data === "REQUESTSTREAM") {
+            console.log('Starting recording');
+            startRecording();
+        }
+    });
 
     ws.on('close', () => console.log('Client left'));
 });
