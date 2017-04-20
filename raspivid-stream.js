@@ -13,9 +13,11 @@ const headerData = {
     set idrFrame(frame) {
         this._lastIdrFrame = frame;
 
-        const waitingStream = this._waitingStream;
-        this._waitingStream = null;
-        this.getStream().pipe(waitingStream);
+        if (this._waitingStream) {
+            const waitingStream = this._waitingStream;
+            this._waitingStream = null;
+            this.getStream().pipe(waitingStream);
+        }
     },
 
     addParameterFrame: function (frame) {
@@ -29,6 +31,7 @@ const headerData = {
             const headersStream = new stream.PassThrough();
             this._firstFrames.forEach((frame) => headersStream.push(frame));
             headersStream.push(this._lastIdrFrame);
+            headersStream.end();
             return headersStream;
         }
     }
@@ -39,7 +42,7 @@ function getLiveStream() {
     return raspivid({
         width: 960,
         height: 540,
-        framerate: 12,
+        framerate: 20,
         profile: 'baseline',
         timeout: 0
     })

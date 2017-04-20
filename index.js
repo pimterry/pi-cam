@@ -20,7 +20,7 @@ app.ws('/video-stream', (ws, req) => {
       height: '540'
     }));
 
-    var videoStream = raspividStream.getStream();
+    var videoStream = raspividStream();
 
     videoStream.on('data', (data) => {
         ws.send(data, { binary: true }, (error) => { if (error) console.error(error); });
@@ -28,7 +28,7 @@ app.ws('/video-stream', (ws, req) => {
 
     ws.on('close', () => {
         console.log('Client left');
-        videoStream.removeListener('data');
+        videoStream.removeAllListeners('data');
     });
 });
 
