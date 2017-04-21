@@ -53,5 +53,10 @@ function updateLeds() {
     leds.sendUpdate();
 }
 
+app.use(function (err, req, res, next) {
+  console.error(err);
+  next(err);
+})
+
 app.listen(80, () => console.log('Server started on 80'));
 
