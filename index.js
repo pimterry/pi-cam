@@ -46,8 +46,10 @@ function updateLeds() {
     leds.clearAll();
 
     for (let i = 0; i < clientCount; i++) {
-        console.log('setting pixel', i);
-        leds.setPixel(i, [255, 0, 0], 1);
+        let colors = [0, 0, 0];
+        colors[Math.floor(i / 8)] = 255;
+
+        leds.setPixel(i % 8, ...colors, 0.1);
     }
 
     leds.sendUpdate();
@@ -59,4 +61,3 @@ app.use(function (err, req, res, next) {
 })
 
 app.listen(80, () => console.log('Server started on 80'));
-
