@@ -46,7 +46,7 @@ function updateLeds() {
     leds.clearAll();
 
     for (let i = 0; i < clientCount; i++) {
-        console.log('setting pixel', i, 'to', colors);
+        console.log('setting pixel', i);
         leds.setPixel(i, [255, 0, 0], 1);
     }
 
