@@ -5,3 +5,8 @@ local_resinos:
     - package.json: 2a381499b79275b20cf37020b1724d3c8397a93f4b6b3e797acdf35c6b70bc26
   environment:
     - INITSYSTEM=on
+uuid: d12d7bbfb1e5e6d4c5ee6ed3e2ce646c
+destination: /usr/src/app
+ignore:
+  - .git
+  - node_modules/
