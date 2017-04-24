@@ -26,7 +26,7 @@ app.ws('/video-stream', (ws, req) => {
       height: '540'
     }));
 
-    var videoStream = raspividStream();
+    var videoStream = raspividStream({ rotation: 180 });
 
     videoStream.on('data', (data) => {
         ws.send(data, { binary: true }, (error) => { if (error) console.error(error); });
