@@ -13,7 +13,7 @@ const Blinkt = require('node-blinkt');
 const leds = new Blinkt();
 leds.setup();
 
-leds.setAllPixels(255, 255, 255, 0.1);
+leds.setAllPixels(255, 255, 255, 1);
 leds.sendUpdate();
 setTimeout(updateLeds, 1000);
 
@@ -52,7 +52,7 @@ function updateLeds() {
         let colors = [0, 0, 0];
         colors[Math.floor(i / 8)] = 255;
 
-        leds.setPixel(i % 8, ...colors, 0.1);
+        leds.setPixel(i % 8, ...colors, 1);
     }
 
     leds.sendUpdate();
