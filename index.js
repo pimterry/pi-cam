@@ -12,7 +12,10 @@ const wss = require('express-ws')(app);
 const Blinkt = require('node-blinkt');
 const leds = new Blinkt();
 leds.setup();
-leds.clearAll();
+
+leds.setAllPixels(255, 255, 255, 0.1);
+leds.sendUpdate();
+setTimeout(updateLeds, 1000);
 
 app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
 
